@@ -8,37 +8,36 @@ require_once('./src/View.php');
 class Controller
 {
  private const DEFAULT_ACTION = 'list';
-
- private array $getData;
- private array $postData;
-
- public function __construct(array $getData, array $postData)
+ 
+ private array $request;
+ private View $view;
+ 
+ public function __construct(array $request)
  {
- $this->getData = $getData;
- $this->postData = $postData;
-
- }
+  $this->request = $request;
+  $this->view = new View();
+ 
+}
 
  public function run(): void
  {
 
- $action = $this->getData['action'] ?? self::DEFAULT_ACTION;
-
- $view = new View();
  $vievParams = [];
 
- switch ($action){
+ switch ($this->action()){
   case 'create':
    $page = 'create';
    $created=false;
-   if(!empty($this->postData)){
+
+   $data = $this->getRequestPost();
+   if(!empty($data)){
     $created=true;
     $vievParams = [
-     'title'=> $this->postData['title'],
-       'description' => $this->postData['description']
-      ];
-     }
-     $vievParams['created'] = $created;
+     'title'=> $data['title'],
+     'description' => $data['description']
+     ];
+    }
+    $vievParams['created'] = $created;
   break;
 
   default:
@@ -46,7 +45,24 @@ class Controller
    $vievParams['resultList'] = 'wyświetlam listę';
   break;
   }
-  $view->render($page, $vievParams);
+  $this->view->render($page, $vievParams);
+ }
+ 
+
+ private function action(): string
+ {
+  $data = $this->getRequestGet();
+  return $data['action'] ?? self::DEFAULT_ACTION;
+ }
+
+ private function getRequestGet(): array
+ {
+  return $this->request['get'] ?? [];
+ }
+
+ private function getRequestPost(): array
+ {
+  return $this->request['post'] ?? [];
  }
 }
  

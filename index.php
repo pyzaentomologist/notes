@@ -15,10 +15,12 @@ $view = new View();
 
 $vievParams=[];
 if($action ==='create'){
+ $page = 'create';
  $vievParams['resultCreate'] = 'udało się';
 } else {
+ $page = 'list';
  $vievParams['resultList'] = 'wyświetlam listę';
 }
 
-$view->render($action, $vievParams);
+$view->render($page, $vievParams);
 

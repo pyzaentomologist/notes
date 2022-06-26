@@ -16,7 +16,15 @@ $view = new View();
 $vievParams=[];
 if($action ==='create'){
  $page = 'create';
- $vievParams['resultCreate'] = 'udało się';
+
+ if(!empty($_POST)){
+  $vievParams = [
+    'title'=> $_POST['title'],
+    'description' => $_POST['description']
+  ];
+
+ }
+
 } else {
  $page = 'list';
  $vievParams['resultList'] = 'wyświetlam listę';

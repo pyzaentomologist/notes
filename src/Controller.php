@@ -37,29 +37,33 @@ public static function initConfiguration(array $configuration): void
  public function run(): void
  {
 
- $vievParams = [];
+ $viewParams = [];
 
  switch ($this->action()){
   case 'create':
    $page = 'create';
-   $created=false;
 
    $data = $this->getRequestPost();
    if(!empty($data)){
-    $created=true;
-    $this->database->createNote($data);
-    header('Location: /');
+    $this->database->createNote([
+      'title' => $data['title'],
+      'description' => $data['description']
+    ]
+    );
+    header('Location: /?before=created');
     
     }
-    $vievParams['created'] = $created;
   break;
 
   default:
-   $page = 'list';
-   $vievParams['resultList'] = 'wyświetlam listę';
-  break;
+    $page = 'list';
+
+    $data = $this->getRequestGet();
+
+    $viewParams['before'] = $data['before'] ?? null;
+    break;
   }
-  $this->view->render($page, $vievParams);
+  $this->view->render($page, $viewParams);
  }
  
 

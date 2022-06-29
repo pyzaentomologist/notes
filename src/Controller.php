@@ -45,11 +45,11 @@ public static function initConfiguration(array $configuration): void
 
    $data = $this->getRequestPost();
    if(!empty($data)){
-    $this->database->createNote([
+    $database = [
       'title' => $data['title'],
       'description' => $data['description']
-    ]
-    );
+    ];
+    $this->database->createNote($database);
     header('Location: /?before=created');
     
     }
@@ -59,6 +59,10 @@ public static function initConfiguration(array $configuration): void
     $page = 'list';
 
     $data = $this->getRequestGet();
+
+    $notes = $this->database->getNotes();
+    dump($notes);
+
 
     $viewParams['before'] = $data['before'] ?? null;
     break;

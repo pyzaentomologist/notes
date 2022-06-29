@@ -202,6 +202,10 @@ form > div:first-child > label:first-child > input:focus {
 table {
   width: 100%;
   table-layout: fixed;
+  padding: 0;
+  border-spacing: 0;
+  border-collapse: collapse;
+  border: 0;
 }
 
 .tbl-header {

@@ -28,6 +28,27 @@ class Database
    }
   }
 
+
+  public function getNotes(): array
+  {
+    try{
+      $notes = [];
+
+      $query = "SELECT id, title, created FROM notes";
+  
+      // $result = $this->conn->query($query, PDO::FETCH_ASSOC);
+      $result = $this->conn->query($query);
+      $notes = $result->fetchAll(PDO::FETCH_ASSOC);
+      // foreach($result as $row){
+      //   $notes = $row;
+      // }
+      return $notes;
+    
+    } catch(Throwable $e){
+      throw new StorageException('Nie udało się pobrać danych o notatkach', 400, $e);
+    }
+    }
+
   public function createNote(array $data): void
   {
     try{

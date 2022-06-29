@@ -37,8 +37,6 @@ public static function initConfiguration(array $configuration): void
  public function run(): void
  {
 
- $viewParams = [];
-
  switch ($this->action()){
   case 'create':
    $page = 'create';
@@ -61,13 +59,15 @@ public static function initConfiguration(array $configuration): void
     $data = $this->getRequestGet();
 
     $notes = $this->database->getNotes();
-    dump($notes);
 
+    $viewParams = [
+      'notes' => $this->database->getNotes(),
+      'before' => $data['before'] ?? null
+    ];
 
-    $viewParams['before'] = $data['before'] ?? null;
     break;
   }
-  $this->view->render($page, $viewParams);
+  $this->view->render($page, $viewParams ?? []);
  }
  
 

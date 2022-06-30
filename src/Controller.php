@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Exception\ConfigurationException;
+use App\Exception\NotFoundException;
 
 require_once('./src/Database.php');
 require_once('./src/View.php');
@@ -53,12 +54,30 @@ public static function initConfiguration(array $configuration): void
     }
   break;
 
+  case 'show':
+    $page = 'show';
+ 
+    $data = $this->getRequestGet();
+
+    $noteId = (int) $data['id'];
+
+    try{
+      $data = $this->database->getNote($noteId);
+    } catch(NotFoundException $e) {
+      exit('Jesteśmy w kontrolerze');
+    }
+
+   
+    $viewParams = [
+      'title' => 'Moja notatka',
+      'description' => 'Opis'
+    ];
+
+   break;
   default:
     $page = 'list';
 
     $data = $this->getRequestGet();
-
-    $notes = $this->database->getNotes();
 
     $viewParams = [
       'notes' => $this->database->getNotes(),

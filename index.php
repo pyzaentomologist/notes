@@ -29,13 +29,12 @@ try {
 } catch(ConfigurationException $e){
  echo '<h1>Błąd bazy</h1>';
  echo '<h3>' . $e->getMessage() . '</h3>';
-} catch(AppException $e)
-{
+} catch(AppException $e) {
   echo '<h1>Wystąpił błąd aplikacji</h1>';
   echo '<h3>' . $e->getMessage() . '</h3>';
- } catch(Throwable $e)
- {
+} catch(Throwable $e) {
   echo '<h1>Wystąpił błąd aplikacji</h1>';
+  dump($e);
 }
 
 

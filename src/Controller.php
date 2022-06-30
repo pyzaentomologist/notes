@@ -50,6 +50,7 @@ public static function initConfiguration(array $configuration): void
     ];
     $this->database->createNote($database);
     header('Location: /?before=created');
+    exit;
     
     }
   break;
@@ -59,18 +60,23 @@ public static function initConfiguration(array $configuration): void
  
     $data = $this->getRequestGet();
 
-    $noteId = (int) $data['id'];
+    $noteId = (int) $data['id'] ?? null;
+
+    if(!$noteId){
+      header('Location: /?error=missingNoteId');
+      exit;
+    }
 
     try{
-      $data = $this->database->getNote($noteId);
+      $note = $this->database->getNote($noteId);
     } catch(NotFoundException $e) {
-      exit('Jesteśmy w kontrolerze');
+      header('Location: /?error=noteNotFound');
+      exit;
     }
 
    
     $viewParams = [
-      'title' => 'Moja notatka',
-      'description' => 'Opis'
+      'note' => $note
     ];
 
    break;
@@ -81,7 +87,8 @@ public static function initConfiguration(array $configuration): void
 
     $viewParams = [
       'notes' => $this->database->getNotes(),
-      'before' => $data['before'] ?? null
+      'before' => $data['before'] ?? null,
+      'error' => $data['error'] ?? null
     ];
 
     break;

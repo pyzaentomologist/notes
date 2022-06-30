@@ -305,7 +305,8 @@ tr > td:nth-child(3) {
   display: inline-block;
 }
 
-button {
+.button {
+  text-decoration: none;
   border: none;
   background-color: cadetblue;
   padding: 5px 10px;
@@ -313,7 +314,7 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+.button:hover {
   background-color: #4691a4;
 }
 

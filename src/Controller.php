@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Request;
 use App\Exception\ConfigurationException;
 use App\Exception\NotFoundException;
 
@@ -17,7 +18,7 @@ class Controller
  private static array $configuration = [];
 
  private Database $database;
- private array $request;
+ private Request $request;
  private View $view;
  
 public static function initConfiguration(array $configuration): void
@@ -25,7 +26,7 @@ public static function initConfiguration(array $configuration): void
   self::$configuration = $configuration;
 }
 
- public function __construct(array $request)
+ public function __construct(Request $request)
  {
   if(empty(self::$configuration['db'])){
     throw new ConfigurationException('Configuration error!!!');
@@ -42,13 +43,12 @@ public static function initConfiguration(array $configuration): void
   case 'create':
    $page = 'create';
 
-   $data = $this->getRequestPost();
-   if(!empty($data)){
-    $database = [
-      'title' => $data['title'],
-      'description' => $data['description']
+   if($this->request->hasPost()){
+    $noteData = [
+      'title' => $this->request->postParam('title'),
+      'description' => $this->request->postParam('description'),
     ];
-    $this->database->createNote($database);
+    $this->database->createNote($noteData);
     header('Location: /?before=created');
     exit;
     
@@ -58,10 +58,12 @@ public static function initConfiguration(array $configuration): void
   case 'show':
     $page = 'show';
  
-    $data = $this->getRequestGet();
+    //$data = $this->getRequestGet();
 
-    $noteId = (int) $data['id'] ?? null;
+    //$noteId = (int) $data['id'] ?? null;
 
+    $noteId = (int) $this->request->getParam('id');
+    var_dump($noteId);
     if(!$noteId){
       header('Location: /?error=missingNoteId');
       exit;
@@ -83,12 +85,10 @@ public static function initConfiguration(array $configuration): void
   default:
     $page = 'list';
 
-    $data = $this->getRequestGet();
-
     $viewParams = [
       'notes' => $this->database->getNotes(),
-      'before' => $data['before'] ?? null,
-      'error' => $data['error'] ?? null
+      'before' => $this->request->getParam('before'),
+      'error' => $this->request->getParam('error')
     ];
 
     break;
@@ -99,18 +99,8 @@ public static function initConfiguration(array $configuration): void
 
  private function action(): string
  {
-  $data = $this->getRequestGet();
-  return $data['action'] ?? self::DEFAULT_ACTION;
+  return $this->request->getParam('action', self::DEFAULT_ACTION);
  }
 
- private function getRequestGet(): array
- {
-  return $this->request['get'] ?? [];
- }
-
- private function getRequestPost(): array
- {
-  return $this->request['post'] ?? [];
- }
 }
  

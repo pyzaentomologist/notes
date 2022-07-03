@@ -13,57 +13,46 @@ require_once('./src/Exception/ConfigurationException.php');
 
 class Controller
 {
- private const DEFAULT_ACTION = 'list';
- 
- private static array $configuration = [];
+  private const DEFAULT_ACTION = 'list';
+  
+  private static array $configuration = [];
 
- private Database $database;
- private Request $request;
- private View $view;
- 
-public static function initConfiguration(array $configuration): void
-{
-  self::$configuration = $configuration;
-}
-
- public function __construct(Request $request)
- {
-  if(empty(self::$configuration['db'])){
-    throw new ConfigurationException('Configuration error!!!');
+  private Database $database;
+  private Request $request;
+  private View $view;
+  
+  public static function initConfiguration(array $configuration): void
+  {
+    self::$configuration = $configuration;
   }
-  $this->database = new Database(self::$configuration['db']);
-  $this->request = $request;
-  $this->view = new View();
-}
 
- public function run(): void
- {
-
- switch ($this->action()){
-  case 'create':
-   $page = 'create';
-
-   if($this->request->hasPost()){
-    $noteData = [
-      'title' => $this->request->postParam('title'),
-      'description' => $this->request->postParam('description'),
-    ];
-    $this->database->createNote($noteData);
-    header('Location: /?before=created');
-    exit;
-    
+  public function __construct(Request $request)
+  {
+    if(empty(self::$configuration['db'])){
+      throw new ConfigurationException('Configuration error!!!');
     }
-  break;
+    $this->database = new Database(self::$configuration['db']);
+    $this->request = $request;
+    $this->view = new View();
+  }
+  public function createAction()
+  {
+    if($this->request->hasPost()){
+      $noteData = [
+        'title' => $this->request->postParam('title'),
+        'description' => $this->request->postParam('description'),
+      ];
+      $this->database->createNote($noteData);
+      header('Location: /?before=created');
+      exit;
+      
+      }
+      $this->view->render('create');
+  }
 
-  case 'show':
-    $page = 'show';
- 
-    //$data = $this->getRequestGet();
-
-    //$noteId = (int) $data['id'] ?? null;
-
+  public function showAction()
+  {
     $noteId = (int) $this->request->getParam('id');
-    var_dump($noteId);
     if(!$noteId){
       header('Location: /?error=missingNoteId');
       exit;
@@ -80,27 +69,36 @@ public static function initConfiguration(array $configuration): void
     $viewParams = [
       'note' => $note
     ];
+    $this->view->render('show', $viewParams ?? []);
 
-   break;
-  default:
-    $page = 'list';
+  }
 
+  public function listAction()
+  {
     $viewParams = [
       'notes' => $this->database->getNotes(),
       'before' => $this->request->getParam('before'),
       'error' => $this->request->getParam('error')
     ];
+    $this->view->render('list', $viewParams ?? []);
 
-    break;
   }
-  $this->view->render($page, $viewParams ?? []);
- }
- 
 
- private function action(): string
- {
-  return $this->request->getParam('action', self::DEFAULT_ACTION);
- }
+
+  public function run(): void
+  {
+   $action = $this->action() . 'Actionsss';
+   if(!method_exists($this, $action)){
+    $action = self::DEFAULT_ACTION . 'Action';
+  }
+  $this->$action();
+  }
+  
+
+  private function action(): string
+  {
+   return $this->request->getParam('action', self::DEFAULT_ACTION);
+  }
 
 }
  

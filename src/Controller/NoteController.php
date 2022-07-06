@@ -8,7 +8,7 @@ use App\Exception\NotFoundException;
 
 class NoteController extends AbstractController
 {
-  public function createAction()
+  public function createAction():void
   {
     if($this->request->hasPost()){
       $noteData = [
@@ -16,26 +16,24 @@ class NoteController extends AbstractController
         'description' => $this->request->postParam('description'),
       ];
       $this->database->createNote($noteData);
-      header('Location: /?before=created');
-      exit;
+
+      $this->redirect('/', ['before' => 'created']);
       
       }
       $this->view->render('create');
   }
 
-  public function showAction()
+  public function showAction():void
   {
     $noteId = (int) $this->request->getParam('id');
     if(!$noteId){
-      header('Location: /?error=missingNoteId');
-      exit;
+      $this->redirect('/', ['error' => 'missingNoteId']);
     }
 
     try{
       $note = $this->database->getNote($noteId);
     } catch(NotFoundException $e) {
-      header('Location: /?error=noteNotFound');
-      exit;
+      $this->redirect('/', ['error' => 'noteNotFound']);
     }
 
    
@@ -46,7 +44,7 @@ class NoteController extends AbstractController
 
   }
 
-  public function listAction()
+  public function listAction():void
   {
     $viewParams = [
       'notes' => $this->database->getNotes(),
@@ -57,6 +55,16 @@ class NoteController extends AbstractController
 
   }
 
+  public function editAction():void
+  {
+    $noteId = (int) $this->request->getParam(('id'));
+    if(!$noteId) {
+      $this->redirect('/', ['error' => 'missingNoteId']);
+    }
+    $this->view->render(
+      'edit'
+    );
+  }
 
 }
  

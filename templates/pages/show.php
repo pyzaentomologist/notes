@@ -6,10 +6,13 @@
   <li>Treść: <?php echo $note['title'] ?></li>
   <li><?php echo $note['description'] ?></li>
   <li>Utworzono: <?php echo $note['created'] ?></li>
- </ul>
- <?php else: ?>
+</ul>
+<a href="/?action=edit&id=<?php echo $note['id']?>" class="button">
+  Edytuj notatkę
+</a>
+<?php else: ?>
   <div>
-   Brak notatki do wyświetlenia
+    Brak notatki do wyświetlenia
   </div>
   <?php endif; ?>
   <a href="/" class="button">

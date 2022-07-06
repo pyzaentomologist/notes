@@ -306,12 +306,14 @@ tr > td:nth-child(3) {
 }
 
 .button {
+  display: inline-block;
   text-decoration: none;
   border: none;
   background-color: cadetblue;
   padding: 5px 10px;
   color: white;
   cursor: pointer;
+  margin-right: 20px;
 }
 
 .button:hover {

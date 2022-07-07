@@ -8,7 +8,7 @@ use App\Exception\NotFoundException;
 
 class NoteController extends AbstractController
 {
-  public function createAction():void
+  public function createAction(): void
   {
     if($this->request->hasPost()){
       $noteData = [
@@ -23,20 +23,10 @@ class NoteController extends AbstractController
       $this->view->render('create');
   }
 
-  public function showAction():void
+  public function showAction(): void
   {
-    $noteId = (int) $this->request->getParam('id');
-    if(!$noteId){
-      $this->redirect('/', ['error' => 'missingNoteId']);
-    }
-
-    try{
-      $note = $this->database->getNote($noteId);
-    } catch(NotFoundException $e) {
-      $this->redirect('/', ['error' => 'noteNotFound']);
-    }
-
    
+    $note = $this->getNote();   
     
     $this->view->render(
       'show',
@@ -45,7 +35,7 @@ class NoteController extends AbstractController
 
   }
 
-  public function listAction():void
+  public function listAction(): void
   {
     $viewParams = [
       'notes' => $this->database->getNotes(),
@@ -56,11 +46,10 @@ class NoteController extends AbstractController
 
   }
 
-  public function editAction():void
+  public function editAction(): void
   {
     if ($this->request->isPost()) {
       $noteId = (int) $this->request->postParam('id');
-      dump($noteId);
       $noteData = [
         'title' => $this->request->postParam('title'),
         'description' => $this->request->postParam('description')
@@ -69,6 +58,30 @@ class NoteController extends AbstractController
       $this->redirect('/', ['before' => 'edited']);
     }
 
+   
+    $note = $this->getNote();
+
+    $this->view->render('edit', ['note' => $note]);
+  }
+
+  public function deleteAction(): void
+  {
+
+    if ($this->request->isPost()) {
+      $noteId = (int) $this->request->postParam('id');
+      $this->database->deleteNote($noteId);
+      $this->redirect('/', ['before' => 'deleted']);
+    }
+    $note = $this->getNote();   
+    
+    $this->view->render(
+      'delete',
+      ['note' => $note]
+    );
+  }
+
+  final private function getNote(): array
+  {
     $noteId = (int) $this->request->getParam('id');
 
     if (!$noteId) {
@@ -80,9 +93,7 @@ class NoteController extends AbstractController
     } catch (NotFoundException $e) {
       $this->redirect('/', ['error' => 'noteNotFound']);
     }
-
-    $this->view->render('edit', ['note' => $note]);
+    return $note;
   }
-
 }
  

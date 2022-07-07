@@ -2,10 +2,13 @@
   <section>
    <div class="message">
      <?php if(!empty($params['before'])) {
-       switch($params['before']){
-         case 'created':
-         echo 'Notatka została utworzona!!!';
-           break;
+       switch ($params['before']) {
+          case 'created':
+            echo 'Notatka została utworzona!!!';
+            break;
+          case 'edited':
+            echo 'Notatka została edytowana';
+            break;
        }
      }
      ?>

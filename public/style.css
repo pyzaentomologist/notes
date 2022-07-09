@@ -269,7 +269,11 @@ tr > td:nth-child(3) {
   font-weight: 700;
   color: #ff0000;
 }
-
+.exception {
+  text-align: center;
+  font-weight: 700;
+  color: #ff0000;
+}
 .message {
   /* margin: 0 25px 10px 25px; */
   /* margin-top:0; */
@@ -313,6 +317,12 @@ tr > td:nth-child(3) {
   color: white;
   cursor: pointer;
   margin-right: 10px;
+}
+.active {
+  text-decoration: none;
+  border: none;
+  background-color: cadetblue;
+  color: #ffffff;
 }
 
 .button:hover {

@@ -14,7 +14,8 @@
             break;
        }
      }
-     ?></div>
+     ?>
+     </div>
 
     <div class="error">
       <?php if(!empty($params['error'])) {
@@ -27,9 +28,24 @@
            break;
        }
      }
-     ?></div>
+     ?>
+    </div>
 
-     
+    <div class="exception">
+      <?php if(!empty($params['exception'])) {
+       switch($params['exception']){
+         case 'date':
+           echo 'brak notatek dla wybranego terminu';
+           break;
+         case 'phrase':
+           echo 'brak notatek zawierających szukaną frazę';
+           break;
+         case 'phraseDate':
+           echo 'brak notatek zawierających szukaną frazę w wybranym terminie';
+           break;
+       }
+     }
+     ?></div>
     <?php
     
     $sort = $params['sort'] ?? [];
@@ -40,10 +56,20 @@
     $size = $page['size'] ?? 10;
     $currentPage = $page['number'] ?? 1;
     $pages = $page['pages'] ?? 1;
+
+    $phrase = $params['phrase'] ?? null;
+    $date = $params['date'] ?? null;
+
     ?>
 
     <div>
       <form class="settings-form" action="/" method="GET">
+        <div>
+          <label>Wyszukaj: <input type="text" name="phrase" value="<?php echo $phrase ?>"></label>
+        </div>
+        <div>
+          <label>Data: <input type="date" name="date" value="<?php echo $date ?>"></label>
+        </div>
         <div>
           <div>Sortuj po:</div>
           <label>Tytule: <input name="sortby" type="radio" value="title" <?php echo $by === 'title' ? 'checked' : '' ?> /></label>
@@ -104,7 +130,7 @@
     </div>
     <?php
 
-    $paginationUrl = "&pagesize=$size&sortby=$by&sortorder=$order";
+    $paginationUrl = "&phrase=$phrase&date=$date&pagesize=$size&sortby=$by&sortorder=$order";
 
     ?>
     <ul class="pagination">
@@ -118,7 +144,11 @@
       <?php for ($i = 1; $i <= $pages; $i++) : ?>
       <li>
         <a href="/?page=<?php echo $i;  echo $paginationUrl?>">
+          <?php if($i === $currentPage) : ?>
+          <button class="active"><?php echo $i; ?></button>
+          <?php else : ?>
           <button><?php echo $i; ?></button>
+          <?php endif ?>
         </a>
       </li>
       <?php endfor; ?>

@@ -44,6 +44,75 @@ class Database
     return $note;
   }
 
+  public function searchNotes(
+    string $phrase,
+    string $date,
+    int $pageNumber, 
+    int $pageSize, 
+    string $sortBy, 
+    string $sortOrder
+  ): array
+  {
+    try{
+      $limit = $pageSize;
+      $offset = ($pageNumber - 1) * $pageSize;
+
+      if (!in_array($sortBy, ['created', 'title'])) {
+        $sortBy = 'title';
+      }
+      
+
+      if (!in_array($sortOrder, ['asc', 'desc'])) {
+        $sortOrder = 'desc';
+      }
+
+      $phrase = $this->conn->quote('%' . $phrase . '%', PDO::PARAM_STR);
+      $date = $this->conn->quote($date . '%', PDO::PARAM_STR);
+
+
+      $query = "
+      SELECT id, title, created 
+      FROM notes 
+      WHERE title LIKE ($phrase) AND created LIKE ($date)
+      ORDER BY $sortBy $sortOrder 
+      LIMIT $offset, $limit
+      ";
+      
+      $result = $this->conn->query($query);
+      return $result->fetchAll(PDO::FETCH_ASSOC);
+    
+    } catch(Throwable $e){
+      throw new StorageException('Nie udało się wyszukać notatek', 400, $e);
+    }
+  }
+
+  public function getSearchCount(string $phrase, string $date): int
+  {
+    try{
+       
+      $phrase = $this->conn->quote('%' . $phrase . '%', PDO::PARAM_STR);
+      $date = $this->conn->quote($date . '%', PDO::PARAM_STR);
+      $query = "
+      SELECT count(*) AS cn
+      FROM notes 
+      WHERE title LIKE ($phrase) AND created LIKE ($date)
+      ";
+  
+      $result = $this->conn->query($query);
+      $result = $result->fetch(PDO::FETCH_ASSOC);        
+      
+      if($result === false){
+        throw new StorageException('Błąd przy próbie pobrania liczby notatek', 400);
+      }
+      return (int) $result['cn'];
+
+      return 0;
+    } catch(Throwable $e){
+      throw new StorageException('Nie udało się pobrać danych o liczbie notatek', 400, $e);
+    }
+  }
+
+
   public function getNotes(
     int $pageNumber, 
     int $pageSize, 

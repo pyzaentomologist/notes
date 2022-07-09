@@ -36,11 +36,9 @@ try {
  echo '<h3>' . $e->getMessage() . '</h3>';
 } catch(AppException $e) {
   echo '<h1>Wystąpił błąd aplikacji</h1>';
-  dump($e);
   echo '<h3>' . $e->getMessage() . '</h3>';
 } catch(\Throwable $e) {
   echo '<h1>Wystąpił błąd aplikacji</h1>';
-  dump($e);
 }
 
 

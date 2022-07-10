@@ -14,7 +14,7 @@ class NoteController extends AbstractController
         'title' => $this->request->postParam('title'),
         'description' => $this->request->postParam('description'),
       ];
-      $this->database->createNote($noteData);
+      $this->noteModel->create($noteData);
 
       $this->redirect('/', ['before' => 'created']);
       
@@ -48,12 +48,12 @@ class NoteController extends AbstractController
     }
 
     if ($phrase || $date) {
-      $noteList = $this->database->searchNotes($phrase, $date, $pageNumber, $pageSize, $sortBy, $sortOrder);
-      $notes = $this->database->getSearchCount($phrase, $date);
+      $noteList = $this->noteModel->search($phrase, $date, $pageNumber, $pageSize, $sortBy, $sortOrder);
+      $notes = $this->noteModel->searchCount($phrase, $date);
 
     } else {
-      $noteList = $this->database->getNotes($pageNumber, $pageSize, $sortBy, $sortOrder);
-      $notes = $this->database->getCount();
+      $noteList = $this->noteModel->list($pageNumber, $pageSize, $sortBy, $sortOrder);
+      $notes = $this->noteModel->count();
     }
 
 
@@ -94,7 +94,7 @@ class NoteController extends AbstractController
         'title' => $this->request->postParam('title'),
         'description' => $this->request->postParam('description')
       ];
-      $this->database->editNote($noteId, $noteData);
+      $this->noteModel->edit($noteId, $noteData);
       $this->redirect('/', ['before' => 'edited']);
     }
 
@@ -109,7 +109,7 @@ class NoteController extends AbstractController
 
     if ($this->request->isPost()) {
       $noteId = (int) $this->request->postParam('id');
-      $this->database->deleteNote($noteId);
+      $this->noteModel->delete($noteId);
       $this->redirect('/', ['before' => 'deleted']);
     }
     $note = $this->getNote();   
@@ -128,7 +128,7 @@ class NoteController extends AbstractController
       $this->redirect('/', ['error' => 'missingNoteId']);
     }
 
-    return $this->database->getNote($noteId);
+    return $this->noteModel->get($noteId);
     
   }
 }
